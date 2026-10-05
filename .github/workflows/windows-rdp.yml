@@ -22,13 +22,19 @@ jobs:
           Add-LocalGroupMember -Group "Administrators" -Member "NexAdmin" -ErrorAction SilentlyContinue
           net user runneradmin Nexouya2026RdpX7
 
-      - name: 3. Install Python & Tools
+      - name: 3. Install Python & Tools (fast)
         run: |
-          Invoke-WebRequest "https://www.python.org/ftp/python/3.12.4/python-3.12.4-amd64.exe" -OutFile "C:\python.exe"
-          Start-Process "C:\python.exe" -ArgumentList "/quiet InstallAllUsers=1 PrependPath=1" -Wait
-          Invoke-WebRequest "https://github.com/git-for-windows/git/releases/download/v2.45.2.windows.1/Git-2.45.2-64-bit.exe" -OutFile "C:\git.exe"
-          Start-Process "C:\git.exe" -ArgumentList "/VERYSILENT /NORESTART" -Wait
+          # Python از winget - ۱۰ ثانیه
+          winget install --id Python.Python.3.12 -e --silent --accept-package-agreements --accept-source-agreements
+          # Git از winget
+          winget install --id Git.Git -e --silent --accept-package-agreements --accept-source-agreements
+
+          # Refresh PATH توی همین session
           $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+          # تست
+          python --version
+          git --version
 
       - name: 4. Install & Connect Tailscale VPN
         env:
